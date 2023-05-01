@@ -35,41 +35,14 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
-
-    class Role(models.TextChoices):
-        ADMIN = "ADMIN", "Admin"
-        STAFF = "STAFF", "Staff"
-        GIS_STAFF = "GIS_STAFF", "Gis_staff"
-
-    base_role = Role.ADMIN
-
-    role = models.CharField(max_length=50, choices=Role.choices)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.role = self.base_role
-            return super().save(*args, **kwargs)
-
-
-class StaffManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=MyUser.Role.STAFF)
-
-
-class Staff(MyUser):
-    base_role = MyUser.Role.STAFF
-
-    staff = StaffManager()
+        
 
     class Meta:
-        proxy = True
+        permissions = (("GIS_STAFF", "All Permissions"), ("STAFF", "Can add Names"))
 
-    def welcome(self):
-        return "Staffs Only"
+   
 
-
-class StaffProfile(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100)
     other_name = models.CharField(max_length=100)
@@ -97,59 +70,7 @@ class StaffProfile(models.Model):
         return short_name()
 
 
-@receiver(post_save, sender=Staff)
-def create_staff_profile(sender, instance, created, **kwargs):
-    if created and instance.role == "STAFF":
-        StaffProfile.objects.create(user=instance)
-
-
-class GISStaffManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=MyUser.Role.GIS_STAFF)
-
-
-class Gis_staff(MyUser):
-    base_role = MyUser.Role.GIS_STAFF
-
-    gis_staff = GISStaffManager()
-
-    class Meta:
-        proxy = True
-
-    def welcome(self):
-        return "GIS Staffs Only"
-
-
-class GisStaffProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
-    other_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    bio = models.CharField(max_length=100)
-    rank = models.CharField(max_length=6)
-    department = models.CharField(max_length=100)
-    division = models.CharField(max_length=100)
-    branch = models.CharField(max_length=100)
-    unit = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.user.username
-
-    def get_full_name(self):
-        """
-        This Function returns the first name, midle name and last name with space in between
-        """
-        full_name = f"{self.first_name} {self.other_name} {self.last_name}"
-        return full_name()
-
-    def short_name(self):
-        """This Function returns Just the first name..."""
-        short_name = f"{self.first_name}"
-        return short_name()
-
-
-@receiver(post_save, sender=Gis_staff)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def save_user_model(sender, instance, created, **kwargs):
-    if created and instance.role == "GIS_STAFF":
-        GisStaffProfile.objects.create(user=instance)
+    if created:
+        Profile.objects.create(user=instance)

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import RegistrationForm, UpdateForm
 
-from .models import MyUser, StaffProfile, GisStaffProfile
+from .models import MyUser, Profile
 
 
 class CustomAdmin(UserAdmin):
@@ -44,8 +44,5 @@ class CustomAdmin(UserAdmin):
             },
         ),
     )
-
-
-admin.site.register(StaffProfile)
-admin.site.register(GisStaffProfile)
 admin.site.register(MyUser, CustomAdmin)
+admin.site.register(Profile)

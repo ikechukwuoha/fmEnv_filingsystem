@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class DocsmgtConfig(AppConfig):
+class BarCodesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "docsmgt"
+    name = "bar_codes"

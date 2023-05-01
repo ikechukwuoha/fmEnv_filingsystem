@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "api",
-    "docsmgt",
+    "bar_codes",
 ]
 
 MIDDLEWARE = [
