@@ -38,9 +38,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
+    
     "users",
     "api",
     "bar_codes",
+    "permissions_auditor",
 ]
 
 MIDDLEWARE = [
@@ -54,6 +57,19 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "filemgt_sys.urls"
+
+
+PERMISSIONS_AUDITOR_PROCESSORS = [
+    'permissions_auditor.processors.auth_mixins.PermissionRequiredMixinProcessor',
+    'permissions_auditor.processors.auth_mixins.LoginRequiredMixinProcessor',
+    'permissions_auditor.processors.auth_mixins.UserPassesTestMixinProcessor',
+    'permissions_auditor.processors.auth_decorators.PermissionRequiredDecoratorProcessor',
+    'permissions_auditor.processors.auth_decorators.LoginRequiredDecoratorProcessor',
+    'permissions_auditor.processors.auth_decorators.StaffMemberRequiredDecoratorProcessor',
+    'permissions_auditor.processors.auth_decorators.SuperUserRequiredDecoratorProcessor',
+    'permissions_auditor.processors.auth_decorators.UserPassesTestDecoratorProcessor',
+]
+
 
 TEMPLATES = [
     {
